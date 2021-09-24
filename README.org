@@ -2,7 +2,7 @@
 
 Welcome to the course: /Targeted Minimum Loss-based Estimation (TMLE)
 for Causal Inference in Biostatistics/. The course starts on Monday
-the 27th of September, 2021 (see [[https://github.com/tagteam/hTMLEne#course-location][course location]]). \\
+the 27th of September, 2021 (see [[https://github.com/helenecharlotte/TMLE-course#course-location][course location]]). \\
 
 Please read the following instructions carefully.
 
@@ -10,13 +10,11 @@ Please read the following instructions carefully.
    participate, you should bring your own laptop.
 
 2. A list of relevant =R= packages for the practicals can be found
-   here: 
-   [[https://github.com/tagteam/hTMLEne#relevant-r-packages][Relevant
-   R packages]].
+   here: [[https://github.com/helenecharlotte/TMLE-course#relevant-r-packages][Relevant R packages]].
 
-3. For an overview of the course, see: [[https://github.com/tagteam/hTMLEne#overview-of-course][Overview of course]].
+3. For an overview of the course, see: [[https://github.com/helenecharlotte/TMLE-course#overview-of-course][Overview of course]].
 
-4. To prepare for the lectures, see: [[https://github.com/tagteam/hTMLEne#reading-plan][Reading plan]].
+4. To prepare for the lectures, see: [[https://github.com/helenecharlotte/TMLE-course#reading-plan][Reading plan]].
 
 If you have any questions or comments, feel free to email me:
 [[mailto:hely@sund.ku.dk][hely@sund.ku.dk]].
