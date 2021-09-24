@@ -29,6 +29,8 @@ The course will take place in the following rooms of CSS:
 | Tuesday   | September 28th | 8--15pm   | CSS 35.3.13 |
 | Wednesday | September 29th | 8--15pm   | CSS 7.0.18  |
 
+CSS is located at Øster Farimagsgade 5, 1353 Kbh K. See also
+https://samf.ku.dk/kontakt/findvej/.
 
 * Overview of course
 
