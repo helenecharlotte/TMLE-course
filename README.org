@@ -1,8 +1,8 @@
 * Welcome to the course
 
 Welcome to the course: /Targeted Minimum Loss-based Estimation (TMLE)
-for Causal Inference in Biostatistics/. The course starts on Monday
-the 27th of September, 2021 (see [[https://github.com/helenecharlotte/TMLE-course#course-location][course location]]). \\
+for Causal Inference (in Biostatistics)/. The course starts on Monday
+the 6th of June, 2023 (see [[https://github.com/helenecharlotte/TMLE-course#course-location][course location]]). \\
 
 Please read the following instructions carefully.
 
@@ -20,14 +20,14 @@ If you have any questions or comments, feel free to email me:
 [[mailto:hely@sund.ku.dk][hely@sund.ku.dk]].
 
 
-* Course location
+* Course dates and location
 
 The course will take place in the following rooms of CSS:
 
-| Monday    | September 27th | 8am--13pm | CSS 7.0.18  |
-| Monday    | September 27th | 13--15pm  | CSS 2.1.42  |
-| Tuesday   | September 28th | 8--15pm   | CSS 35.3.13 |
-| Wednesday | September 29th | 8--15pm   | CSS 7.0.18  |
+| Tuesday   | June 6th | 9am--15pm | CSS 7.0.08 |
+| Wednesday | June 7th | 9am--15pm | CSS 7.0.08 |
+| Thursday  | June 8th | 9am--15pm | CSS 7.0.08 |
+| Friday    | June 9th | 9am--15pm | CSS 7.0.08 |
 
 CSS is located at Øster Farimagsgade 5, 1353 Kbh K. See also
 https://samf.ku.dk/kontakt/findvej/.
