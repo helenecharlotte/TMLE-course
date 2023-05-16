@@ -47,30 +47,42 @@ treatment effect, with the general principles being similar for other
 parameters. \\
 
 
-The course runs over three full days (8am--3pm, lunch from 12--1pm),
+The course runs over four full days (9am--3pm, lunch from 12--1pm),
 planned largely as follows:
 
 - Day 1. :: On day 1 we go through the roadmap of targeted learning
-           (both from a theoretical and a practical angle) and give a
-           brief introduction to basic concepts of causal
-           inference. The afternoon will be about the background
-           theory of nonparametric efficiency theory.
+  (both from a theoretical and a practical angle) and give a brief
+  introduction to basic concepts of causal inference and targeted
+  nonparametric inference.
 
-- Day 2. :: On day 2 we introduce the TMLE, relating its foundation to
-           the theory from the afternoon of day 1. We go through the
-           targeting step, its purpose and how it is carried out for
-           an average treatment effect. The afternoon will cover super
-           learning.
+- Day 2. :: On day 2 we introduce the TMLE more specifically. We go
+  through the targeting step, its purpose and how it is carried out
+  for an average treatment effect. The afternoon will cover super
+  learning.
 
-- Day 3. :: On day 3 we move on to time-varying settings.  We discuss
-            time-varying treatments and time-dependent confounding
-            that hinders the use of "classical" statistical methods.
+- Day 3 :: On Day 3 we will dig a bit further into the theoretical
+  basis. In the afternoon will move on to causal effects in
+  time-varying settings.
+  
+- Day 4. :: On day 4 we consider identification and targeting in
+  time-varying settings, where time-dependent confounding hinders the
+  use of "classical" statistical methods.
 
 
 * Reading plan 
 
 
-For *Day 1* and *Day 2* we recommend that you read: 
+For *Day 1* we recommend that you read:
+
+#+begin_quote 
+Hines, O., Dukes, O., Diaz-Ordaz, K., & Vansteelandt,
+S. (2022). Demystifying statistical learning based on efficient
+influence functions. The American Statistician, 76(3), 292-304.
+#+end_quote
+
+You can focus on Section 5. Moreover, the following provides a
+valuable introduction to the concepts of nonparametric efficiency
+theory that we need to understand TMLE: 
 
 #+begin_quote 
 Kennedy, E. H. (2016). Semiparametric theory and empirical processes
@@ -78,10 +90,14 @@ in causal inference. In Statistical causal inferences and their
 applications in public health research (pp. 141-167). Springer, Cham.
 #+end_quote
 
-This text provides a valuable introduction to the concepts of
-nonparametric efficiency theory that we need to understand TMLE. You
-may want to focus on pages 1--13, although Section 4.1 is also quite
-useful. \\
+You may want to focus on pages 1--13, although Section 4.1 is also
+quite useful. The same author has also written a really nice review
+more recently, that you may also want to look into:
+
+#+begin_quote 
+Kennedy, E. H. (2022). Semiparametric doubly robust targeted double
+machine learning: a review. arXiv preprint arXiv:2203.06469.
+#+end_quote
 
 For *Day 2*, you may read Chapter 5 of: 
 
@@ -94,7 +110,7 @@ Business Media.
 You can use this as an introduction to TMLE. You may further read
 Chapter 3 of the same book as an introduction to super learning. \\
 
-For *Day 3*, you should read: 
+For *Day 4*, you should read: 
 
 #+begin_quote 
 Kreif, N., Tran, L., Grieve, R., De Stavola, B., Tasker, R. C., &
