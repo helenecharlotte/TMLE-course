@@ -1,7 +1,7 @@
 * Welcome to the course
 
 Welcome to the course: /Targeted Minimum Loss-based Estimation (TMLE)
-for Causal Inference (in Biostatistics)/. The course starts on Monday
+for Causal Inference (in Biostatistics)/. The course starts on Tuesday
 the 6th of June, 2023 (see [[https://github.com/helenecharlotte/TMLE-course#course-location][course location]]). \\
 
 Please read the following instructions carefully.
