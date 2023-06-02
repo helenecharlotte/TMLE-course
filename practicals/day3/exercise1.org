@@ -1,0 +1,409 @@
+* Setting :noexport:
+Remember to exceture (C-c C-c) the following line:
+#+PROPERTY: header-args:R :async :results output verbatim  :exports code  :session *R* :cache yes
+Other setting can also be useful:
+# #+PROPERTY: header-args:R  :async :results output raw drawer  :exports results
+# :session *R* :cache yes
+
+* Introduction
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
+In this exercise we consider the following statistical problem and estimation
+strategy. We are interested in estimating the parameter
+#+begin_export latex
+\begin{equation*}
+  \Psi(P) = P(X \leq -2),
+\end{equation*}
+when we assume that \( P \) belongs to a model $\mathcal{P}$ such that all
+measure in $\mathcal{P}$ has a density with
+respect to Lebesgue measure. Under this assumption, the target parameter can be
+written as
+\begin{equation*}
+  P(X \leq -2) = \int_{-\infty}^{-2} f(x)  \diff x,
+\end{equation*}
+where \( f \) is the density of \( P \) (with respect to Lebesgue measure).
+
+We now choose to first estimate the density \( f \) using a kernel-based density
+estimator. For any \( x \in \R \) this estimator is given as
+\begin{equation*}
+  \hat{f}_h(x) = \empmeas{[k_h(x, \blank)]}
+  = \frac{1}{n}\sum_{i=1}^{n}{k_h(x, X_i)},
+\end{equation*}
+for some kernel function \( k_h \) that depends on the tuning parameter \( h \)
+which is called the bandwidth. We use the Gaussian kernel which means that
+\begin{equation*}
+  k_h(x, y) = \frac{1}{h}k
+  \left(
+    \frac{x-y}{h}
+  \right),
+  \quad \text{with} \quad
+  k(z) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}z^2}.
+\end{equation*}
+Plugging this estimator into the expression above we obtain our target estimator
+\begin{equation*}
+  \hat{\Psi}_n =  \int_{-\infty}^{-2} \hat{f}_h(x)  \diff x.
+\end{equation*}
+
+In the following exercises we consider how the bandwidth tuning parameter
+\( h \) influences both our nuisance parameter estimator \( \hat{f}_h \) and our
+target estimator \( \hat{\Psi}_n \).
+#+end_export
+
+
+We use the following libraries
+#+BEGIN_SRC R
+  library(data.table)
+  library(ggplot2)  
+#+END_SRC
+
+* Kernel estimator
+We start by defining the true nuisance and target parameter
+#+BEGIN_SRC R
+  f0 <- function(x) dnorm(x)/2 + dnorm(x, sd=3, mean=3)/2
+  F0 <- function(x) pnorm(x)/2 + pnorm(x, sd=3, mean=3)/2
+  Psi0 <- F0(-2)
+#+END_SRC
+
+We can simulate data that has =f0= as density as follows.
+
+#+BEGIN_SRC R
+sim_data <- function(n){
+  hh <- 1*(runif(n)<.5)
+  xx <- hh*rnorm(n) + (1-hh)*rnorm(n, sd=3, mean=3)
+  return(xx)
+}
+#+END_SRC
+
+#+BEGIN_SRC R :exports both
+  X <- sim_data(n=500)
+  head(X)
+#+END_SRC
+
+We can use the =R=-function =density= to estimate the density using a
+kernel-based estimator.
+
+#+BEGIN_SRC R :results graphics file :exports both :file (org-babel-temp-file "./figure-" ".pdf") 
+  ## Plot the data and the true density
+  xseq <- seq(min(X), max(X), length.out=200)
+  hist(X, breaks=50, probability = 1, ylim = c(0,0.25))
+  lines(xseq, f0(xseq))
+
+  ## Estimate and plot the density
+  bandwidth <- 0.7
+  f_hat <- density(X, kernel="gaussian", bw = bandwidth)
+  lines(f_hat, col="blue")
+#+END_SRC
+
+Try changing the =bandwidth= tuning parameter to see the effect. You can also
+try to change the number of observations generated in the simulation by
+supplying a different =n= to the function =sim_data=.
+
+* Plug-in estimator
+The integral of a kernel-density estimator based on the Guassian kernel can be
+written as
+#+begin_export latex
+\begin{align*}
+  \hat{\Psi}_n =
+  & = \int_{-\infty}^x \hat{f}_h(u) \diff u
+  \\
+  & = \int_{-\infty}^x \frac{1}{n}\sum_{i=1}^{n}k_h(X_i, u) \diff u
+  \\
+  & =  \frac{1}{n}\sum_{i=1}^{n}\int_{-\infty}^x k_h(X_i, u) \diff u
+  \\
+  & =  \frac{1}{n}\sum_{i=1}^{n}\int_{-\infty}^x \frac{1}{h}
+    k{\left(
+    \frac{u-X_i}{h}
+    \right)} \diff u
+    \quad \text{with $k$ the density of $\mathcal{N}(0,1)$} 
+  \\
+  & =  \frac{1}{n}\sum_{i=1}^{n}\int_{-\infty}^{\frac{x-X_i}{h}} 
+    k{\left(z
+    \right)} \diff z
+  \\
+  & = \frac{1}{n}\sum_{i=1}^{n} K{
+    \left(
+    {\frac{x-X_i}{h}}
+    \right)}
+    \quad \text{with $K$ the CDF of $\mathcal{N}(0,1)$}.
+\end{align*}
+#+end_export
+
+We can thus implement this estimator as
+
+#+BEGIN_SRC R
+  target_estimator <- function(data, bw, x = -2){
+    mean(pnorm((x-data)/bw))
+  }
+#+END_SRC
+
+To evaluate this estimator's performance we need to simulate data repeatedly:
+#+BEGIN_SRC R :results graphics file :exports both :file (org-babel-temp-file "./figure-" ".pdf") 
+  ## Simulate 200 instance of the target estimator
+  target_est0 <- sapply(1:200, function(x){
+    X0 = sim_data(n = 500)
+    target_estimator(data = X0, bw = 0.7)
+  })
+
+  ## Visualize and compare to true target parameter
+  boxplot(target_est0, main = "Target estimator (bw=0.7)", ylim=c(0,0.08))
+  abline(h = Psi0, col = "red")
+#+END_SRC
+
+1. Try changing the bandwidth tuning parameter (by supplying a different value
+   for =bw=) to examine how this affects the performance of the nuisance
+   estimator.
+2. For a choice of =bw= that leads to a good performance for the estimator of
+   the target parameter, try to see how the density estimator using the same
+   =bw= performs by supplying this value to the code in the previous exercise.
+
+#+BEGIN_SRC R :results graphics file :exports results :file (org-babel-temp-file "./figure-" ".pdf")
+  ## The value bw=0.1 gives better results
+  target_est0 <- sapply(1:200, function(x){
+    X0 = sim_data(n = 500)
+    target_estimator(data = X0, bw = 0.1)
+  })
+  boxplot(target_est0, main = "Target estimator (bw=0.1)", ylim=c(0,0.08))
+  abline(h = Psi0, col = "red")
+#+END_SRC
+
+#+BEGIN_SRC R :results graphics file :exports results :file (org-babel-temp-file "./figure-" ".pdf") 
+## Using this value for the density estimator gives poor results
+hist(X, breaks=50, probability = 1, ylim = c(0,0.25), main = "Density estimator (bw=0.1)")
+lines(xseq, f0(xseq))
+f_hat <- density(X, kernel="gaussian", bw = 0.1)
+lines(f_hat, col="blue")
+#+END_SRC
+
+* Bias/variance trade-off
+<<sec:bias-var>>
+In this exercise we conduct a more systematic investigation of the performance
+of the estimators of the the nuisance parameter and the target parameter.
+
+We start by simulating the density estimator on a dataset of size ~n~ $=500$ for
+$25$ different bandwidth values. We repeat this $100$ times and calculate the
+(integrated) squared bias, variance and mean squared error (MSE). Run the
+following code and try to understand what happens. 
+#+BEGIN_SRC R
+  ## Function to simulate density estimator
+  sim_density_estimator <- function(n = 500,
+				    bws = seq(0.25, 3, length.out = 25)){
+    X0 = sim_data(n = n)
+    out = do.call(rbind, lapply(bws, function(bw){
+      f_hat = density(X0, kernel="gaussian", bw = bw,
+		      from = -4, to = 11, n = 512)
+      x_grid = seq(-4, 11, length.out = 512)
+      data.table(bandwidth = bw,
+		 x = x_grid,
+		 f0 = f0(x_grid),
+		 f_hat = f_hat$y)
+    }))
+    return(out[])
+  }
+
+  ## Repeaet estimation 100 times and collect results
+  point_est <- do.call(rbind, lapply(1:100, sim_density_estimator))
+  point_est <- point_est[, .(bias2 = (mean(f_hat-f0))^2,
+			     var = var(f_hat),
+			     mse = mean((f_hat-f0)^2)),
+			 by = .(bandwidth, x)]
+  int_est <- melt(point_est[, .(bias2 = mean(bias2),
+				var = mean(var),
+				mse = mean(mse)),
+			    by = bandwidth],
+		  id.vars = "bandwidth",
+		  variable.name = "measure")
+#+END_SRC
+
+Visualize the results with the following code and describe the bias-variance
+trade-off as a function of the bandwidth.
+#+BEGIN_SRC R :results graphics file :exports both :file (org-babel-temp-file "./figure-" ".pdf") 
+ggplot(int_est, aes(x = bandwidth, y = value, col = measure)) +
+  geom_line() +
+  theme_bw() 
+#+END_SRC
+
+We do the same thing for the estimator of the target parameter
+#+BEGIN_SRC R
+  ## Function to simulate target parameter with different bandwidths
+  sim_target_estimator <- function(n = 500,
+				   bws = seq(0.25, 3, length.out = 25)){
+    X0 = sim_data(n = n)
+    out = do.call(rbind, lapply(bws, function(bw){
+      Psi_hat = target_estimator(data = X0, bw = bw)
+      data.table(bandwidth = bw, Psi0 = Psi0, Psi_hat = Psi_hat)
+    }))
+    return(out[])
+  }
+
+  ## Repeat 100 times and collect results
+  tar_est <- do.call(rbind, lapply(1:100, sim_target_estimator))
+  tar_est <- tar_est[, .(bias2 = (mean(Psi_hat-Psi0))^2,
+			 var = var(Psi_hat),
+			 mse = mean((Psi_hat-Psi0)^2)),
+		     by = .(bandwidth)]
+  tar_est <- melt(tar_est,id.vars = "bandwidth",variable.name = "measure")
+#+END_SRC
+
+Visualize the results with the following code and compare with the plot for the
+estimator of the density.
+
+#+BEGIN_SRC R :results graphics file :exports both :file (org-babel-temp-file "./figure-" ".pdf") 
+ggplot(tar_est, aes(x = bandwidth, y = value, col = measure)) +
+  geom_line() +
+  theme_bw()
+#+END_SRC
+
+* Inference and asymptotic normality
+
+When $n$ increases, we can let the bandwidth decrease because the data is more
+dense. It is known that, under suitable smoothness assumptions, the optimal
+performance for kernel-based density is given when the bandwidth is chosen as
+=bw= $= C n^{-1/5}$ for some constant that depends on the true density (see for
+instance chapter 25 in \cite{van2000asymptotic}). In exercise [[sec:bias-var]] we
+saw that a good choice for the bandwidth was around 1 when $n=500$. Hence we can
+estimate $C$ to be $C=500^{1/5} \approx 3.4$.
+
+We use this to construct the function =optimal_bw= which returns the
+(approximately) optimal value for the bandwidth as a function of $n$. We can
+verify that this looks reasonable by plotting the obtained density with
+increasing $n$.
+
+#+BEGIN_SRC R :results graphics file :exports both :file (org-babel-temp-file "./figure-" ".pdf") 
+  ## Function giving the optimal bandwidth as a function of n
+  optimal_bw <- function(n) 3.4*n^{-1/5}
+
+  ## Verify that this looks reasonable:
+  ## Plot the true density
+  plot(seq(-4, 11, length.out = 512),
+       f0(seq(-4, 11, length.out = 512)),
+       type = "l")
+
+  ## Plot the estimated densities for increasing n
+  lapply(c(100, 500, 1000, 5000, 20000), function(n){
+    X0 = sim_data(n)
+    bw_n = optimal_bw(n)
+    f_hat_n = density(X0, kernel = "gaussian", bw = bw_n)
+    Sys.sleep(0.5)
+    lines(f_hat_n, col = "blue")
+  })
+#+END_SRC
+
+Let us now use the same automatic bandwidth selector for our target estimator.
+When we want to do inference for the parameter $\Psi$ we will typically appeal
+to the central limit theorem to argue that
+#+begin_export latex
+\begin{equation*}
+  \sqrt{n}(\hat{\Psi}_n - \Psi) \sim \mathcal{N}(0, \sigma^2),
+\end{equation*}
+#+end_export
+when $n$ is large. Let us investigate if this seems correct when we use
+=optimal_bw= to select the bandwidth for our target estimator.
+
+#+BEGIN_SRC R :results graphics file :exports both :file (org-babel-temp-file "./figure-" ".pdf") 
+  target_est_auto <- do.call(rbind, lapply(1:100, function(x){
+    do.call(rbind, lapply(c(100, 500, 1000, 5000, 20000), function(n){
+      X0 = sim_data(n)
+      bw_n = optimal_bw(n)
+      est = target_estimator(data = X0, bw = bw_n)
+      stand_est = sqrt(n)*(est-Psi0)
+      out = data.table(n = n,bw = bw_n,est = est, stand_est)
+      return(out)
+    }))
+  }))
+  target_est_auto[,{
+    boxplot(stand_est~n, ylim = c(-0.5,max(stand_est)))
+    abline(h = 0, col = "red")
+  }]
+#+END_SRC
+
+Try to see if the estimator improves if we use a different function to select
+the bandwidth, for instance by using the function
+#+BEGIN_SRC R
+  undersmooth_bw <- function(n) n^{-1/2}
+#+END_SRC
+
+Reuse the code snippet we used to construct =target_est_auto= but replace
+=optimal_bw= with =undersmooth_bw= (or your own function). Does this improve
+performance? Can you explain this using the plots of the bias-variance trade-off
+we made in exercise [[sec:bias-var]]?
+
+#+BEGIN_SRC R :results graphics file :exports results :file (org-babel-temp-file "./figure-" ".pdf") 
+  target_est_auto <- do.call(rbind, lapply(1:100, function(x){
+    do.call(rbind, lapply(c(100, 500, 1000, 5000, 20000), function(n){
+      X0 = sim_data(n)
+      bw_n = undersmooth_bw(n)
+      est = target_estimator(data = X0, bw = bw_n)
+      stand_est = sqrt(n)*(est-Psi0)
+      out = data.table(n = n,bw = bw_n,est = est, stand_est)
+      return(out)
+    }))
+  }))
+  target_est_auto[,{
+    boxplot(stand_est~n, ylim = c(-0.5,max(stand_est)))
+    abline(h = 0, col = "red")
+  }]
+#+END_SRC
+
+You can also try to rerun the code that generated the densities for increasing
+$n$, but use =undersmooth_bw= instead of =optimal_bw=. 
+
+#+BEGIN_SRC R :results graphics file :exports results :file (org-babel-temp-file "./figure-" ".pdf") 
+  plot(seq(-4, 11, length.out = 512),
+       f0(seq(-4, 11, length.out = 512)),
+       type = "l")
+
+  ## Plot the estimated densities for increasing n
+  lapply(c(100, 500, 1000, 5000, 20000), function(n){
+    X0 = sim_data(n)
+    bw_n = undersmooth_bw(n)
+    f_hat_n = density(X0, kernel = "gaussian", bw = bw_n)
+    Sys.sleep(0.5)
+    lines(f_hat_n, col = "blue")
+  })
+#+END_SRC
+
+* Check density code :noexport:
+
+#+BEGIN_SRC R
+
+  test_fun <- function(x, bw){
+    mean(dnorm((X-x)/bw)/bw)
+  }
+
+  test_fun(-2, 0.1)
+  density(X, kernel = "gaussian", bw = 0.1, from = -2, n = 1)$y
+
+  plot(xseq,density(X, kernel = "gaussian", bw = 0.5), type = "l")
+
+  lines(density(X, kernel = "gaussian", bw = 0.5))
+
+  hist(X, breaks=50, probability = 1, ylim = c(0,0.25))
+  lines(density(X, kernel="gaussian", bw = 0.2), col="blue")
+  lines(xseq, sapply(xseq, function(x) test_fun(x = x, 0.2)), col = "red")
+  ## OK!
+#+END_SRC
+
+
+
+* References
+\renewcommand{\section}[2]{} 
+\bibliography{./latex-settings/default-bib.bib}
+
+* HEADER :noexport:
+#+TITLE: Bias-variance trade-off with infinite-dimensional nuisance parameter
+#+Author: Anders Munch
+#+Date: \today
+
+#+LANGUAGE:  en
+#+OPTIONS:   num:t toc:nil ':t ^:t
+#+LaTeX_CLASS: article
+#+LaTeX_CLASS_OPTIONS: [a4paper,danish]
+#+LATEX_HEADER:\usepackage[margin=4cm]{geometry}
+#+LATEX_HEADER:\usepackage{dsfont, pgfpages, tikz,amssymb, amsmath,xcolor, caption, subcaption}
+# #+LATEX_HEADER: \hypersetup{ hidelinks, }
+#+LaTeX_HEADER: \input{./latex-settings/standard-settings.tex}
+#+LaTeX_HEADER: \input{./latex-settings/standard-commands.tex}
+#+LaTeX_HEADER: \input{./latex-settings/org-settings.tex}
+#+LaTeX_HEADER: \input{./latex-settings/title-compact.tex}
+#+BIBLIOGRAPHY: ./latex-settings/default-bib plain
