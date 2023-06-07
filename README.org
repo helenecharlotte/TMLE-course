@@ -24,13 +24,14 @@ If you have any questions or comments, feel free to email me:
 
 The course will take place in the following rooms of CSS:
 
-| Tuesday   | June 6th | 9am--15pm | CSS 7.0.08 |
-| Wednesday | June 7th | 9am--15pm | CSS 7.0.08 |
-| Thursday  | June 8th | 9am--15pm | CSS 7.0.08 |
-| Friday    | June 9th | 9am--15pm | CSS 7.0.08 |
+| Tuesday   | June 6th | 9:00--15:00 | CSS 7.0.08 |
+| Wednesday | June 7th | 9:00--15:00 | CSS 7.0.18 |
+| Thursday  | June 8th | 9:00--15:00 | CSS 7.0.18 |
+| Friday    | June 9th | 9:00--15:00 | CSS 7.0.18 |
 
 CSS is located at Øster Farimagsgade 5, 1353 Kbh K. See also
-https://samf.ku.dk/kontakt/findvej/.
+https://samf.ku.dk/kontakt/findvej/. *OBS: Note that we have changed
+to room CSS 7.0.18 from Wednesday*.
 
 * Overview of course
 
