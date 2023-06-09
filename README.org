@@ -1,4 +1,9 @@
+* Link to course evaluation (anonymous)
+
+\url{https://forms.gle/muTThE3cskX2WQyQA}
+
 * Welcome to the course
+
 
 Welcome to the course: /Targeted Minimum Loss-based Estimation (TMLE)
 for Causal Inference (in Biostatistics)/. The course starts on Tuesday
