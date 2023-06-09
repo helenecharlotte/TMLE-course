@@ -1,6 +1,6 @@
 * Link to course evaluation (anonymous)
 
-\url{https://forms.gle/muTThE3cskX2WQyQA}
+[[https://forms.gle/muTThE3cskX2WQyQA][Link to course evaluation]].
 
 * Welcome to the course
 
